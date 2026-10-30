@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Expense {
   final String title;
   final String category;

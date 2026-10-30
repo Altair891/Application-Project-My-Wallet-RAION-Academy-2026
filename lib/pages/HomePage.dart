@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/utils/Formats.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/models/ExpenseCategory.dart';
 import 'package:flutter_application_1/pages/AddExpensePage.dart';
@@ -7,30 +8,19 @@ import 'package:flutter_application_1/widgets/CategoryItems.dart';
 import 'package:flutter_application_1/widgets/ExpenseTile.dart';
 import 'package:flutter_application_1/widgets/SectionHeading.dart';
 
-const Color primaryColor = Color(0xFF176B55);
-
-String formatRupiah(int amount) {
-  final digits = amount.toString();
-  final result = StringBuffer();
-
-  for (int i = 0; i < digits.length; i++) {
-    result.write(digits[i]);
-    final remaining = digits.length - i - 1;
-    if (remaining > 0 && remaining % 3 == 0) {
-      result.write('.');
-    }
-  }
-
-  return 'Rp$result';
-}
-
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  void openAddExpensePage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AddExpensePage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Membaca data dari ExpenseProvider
-    final expenseProvider = Provider.of<ExpenseProvider>(context);
+    final expenseProvider = context.watch<ExpenseProvider>();
     final expenses = expenseProvider.expenses;
     final balance = expenseProvider.balance;
 
@@ -94,7 +84,6 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 26),
 
-              // Kartu Sisa Saldo Otomatis dari Provider
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(22),
@@ -129,14 +118,7 @@ class HomePage extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AddExpensePage(),
-                            ),
-                          );
-                        },
+                        onPressed: () => openAddExpensePage(context),
                         icon: const Icon(Icons.add_rounded),
                         label: const Text('Catat Pengeluaran'),
                         style: ElevatedButton.styleFrom(

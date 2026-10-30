@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/models/Expense.dart';
+import 'package:flutter_application_1/utils/Formats.dart';
 
 class ExpenseTile extends StatelessWidget {
   final Expense expense;
