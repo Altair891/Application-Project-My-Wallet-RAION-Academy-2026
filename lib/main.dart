@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_application_1/models/Expense.dart';
 import 'package:flutter_application_1/models/ExpenseCategory.dart';
+import 'package:flutter_application_1/providers/ExpenseProvider.dart';
 import 'package:flutter_application_1/widgets/CategoryItems.dart';
 import 'package:flutter_application_1/widgets/ExpenseTile.dart';
 import 'package:flutter_application_1/widgets/SectionHeading.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ExpenseProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 const Color primaryColor = Color(0xFF176B55);
@@ -72,65 +79,27 @@ Color colorForCategory(String category) {
   return primaryColor;
 }
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int balance = 500000;
-
-  final List<Expense> expenses = [
-    Expense(
-      title: 'Nasi ayam',
-      category: 'Makanan',
-      note: 'Makan siang',
-      amount: 18000,
-      date: DateTime(2026, 10, 18, 12, 15),
-    ),
-    Expense(
-      title: 'Ojek online',
-      category: 'Transport',
-      note: 'Perjalanan ke kampus',
-      amount: 12000,
-      date: DateTime(2026, 10, 18, 9, 10),
-    ),
-    Expense(
-      title: 'Kopi susu',
-      category: 'Makanan',
-      note: 'Kopi sebelum kelas',
-      amount: 15000,
-      date: DateTime(2026, 10, 18, 8, 5),
-    ),
-    Expense(
-      title: 'Pulsa',
-      category: 'Lainnya',
-      note: 'Paket internet',
-      amount: 25000,
-      date: DateTime(2026, 10, 17, 19, 30),
-    ),
-  ];
-
-  Future<void> openAddExpensePage() async {
+  Future<void> openAddExpensePage(BuildContext context) async {
     final Expense? newExpense = await Navigator.push<Expense>(
       context,
       MaterialPageRoute(builder: (context) => const AddExpensePage()),
     );
 
-    if (newExpense == null) return;
+    if (newExpense == null || !context.mounted) return;
 
-    setState(() {
-      expenses.insert(0, newExpense);
-      balance -= newExpense.amount;
-    });
+    context.read<ExpenseProvider>().addExpense(newExpense);
   }
 
   @override
   Widget build(BuildContext context) {
+    final expenseProvider = context.watch<ExpenseProvider>();
+    final expenses = expenseProvider.expenses;
+    final balance = expenseProvider.balance;
+
     return Scaffold(
-      // Home sengaja tidak menggunakan AppBar sesuai penugasan.
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
@@ -190,7 +159,6 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 26),
 
-              // Kartu sisa saldo.
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(22),
@@ -225,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: openAddExpensePage,
+                        onPressed: () => openAddExpensePage(context),
                         icon: const Icon(Icons.add_rounded),
                         label: const Text('Catat Pengeluaran'),
                         style: ElevatedButton.styleFrom(
@@ -349,7 +317,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
       date: DateTime.now(),
     );
 
-    // Kirim transaksi ke Home, lalu tutup halaman ini.
     Navigator.pop(context, newExpense);
   }
 
