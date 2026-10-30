@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_1/utils/Formats.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/models/Expense.dart';
 import 'package:flutter_application_1/models/ExpenseCategory.dart';
 import 'package:flutter_application_1/providers/ExpenseProvider.dart';
-
-const Color primaryColor = Color(0xFF176B55);
 
 class AddExpensePage extends StatefulWidget {
   const AddExpensePage({super.key});
