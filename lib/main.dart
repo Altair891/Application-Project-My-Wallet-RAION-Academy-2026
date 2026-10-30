@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_1/models/Expense.dart';
+import 'package:flutter_application_1/models/ExpenseCategory.dart';
+import 'package:flutter_application_1/widgets/CategoryItems.dart';
+import 'package:flutter_application_1/widgets/ExpenseTile.dart';
+import 'package:flutter_application_1/widgets/SectionHeading.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,57 +36,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-class Expense {
-  final String title;
-  final String category;
-  final String note;
-  final int amount;
-  final DateTime date;
-
-  const Expense({
-    required this.title,
-    required this.category,
-    required this.note,
-    required this.amount,
-    required this.date,
-  });
-}
-
-class ExpenseCategory {
-  final String name;
-  final IconData icon;
-  final Color color;
-
-  const ExpenseCategory({
-    required this.name,
-    required this.icon,
-    required this.color,
-  });
-}
-
-const List<ExpenseCategory> expenseCategories = [
-  ExpenseCategory(
-    name: 'Makanan',
-    icon: Icons.restaurant_rounded,
-    color: Color(0xFFFFA726),
-  ),
-  ExpenseCategory(
-    name: 'Transport',
-    icon: Icons.directions_bus_rounded,
-    color: Color(0xFF42A5F5),
-  ),
-  ExpenseCategory(
-    name: 'Belanja',
-    icon: Icons.shopping_bag_rounded,
-    color: Color(0xFFAB72D5),
-  ),
-  ExpenseCategory(
-    name: 'Lainnya',
-    icon: Icons.widgets_rounded,
-    color: Color(0xFF26A69A),
-  ),
-];
 
 String formatRupiah(int amount) {
   final digits = amount.toString();
@@ -345,132 +299,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class SectionHeading extends StatelessWidget {
-  final String title;
-  final String subtitle;
-
-  const SectionHeading({
-    super.key,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF202923),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          subtitle,
-          style: const TextStyle(fontSize: 12, color: Colors.black54),
-        ),
-      ],
-    );
-  }
-}
-
-// Widget buatan sendiri ini digunakan berulang kali untuk 4 kategori.
-class CategoryItem extends StatelessWidget {
-  final ExpenseCategory category;
-
-  const CategoryItem({super.key, required this.category});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 54,
-          height: 54,
-          decoration: BoxDecoration(
-            color: category.color.withValues(alpha: 0.14),
-            borderRadius: BorderRadius.circular(17),
-          ),
-          child: Icon(category.icon, color: category.color, size: 27),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          category.name,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-        ),
-      ],
-    );
-  }
-}
-
-class ExpenseTile extends StatelessWidget {
-  final Expense expense;
-
-  const ExpenseTile({super.key, required this.expense});
-
-  @override
-  Widget build(BuildContext context) {
-    final categoryColor = colorForCategory(expense.category);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      child: Row(
-        children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: categoryColor.withValues(alpha: 0.13),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(
-              iconForCategory(expense.category),
-              color: categoryColor,
-              size: 23,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  expense.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  '${expense.category} • ${formatTime(expense.date)}',
-                  style: const TextStyle(fontSize: 11, color: Colors.black54),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            '- ${formatRupiah(expense.amount)}',
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFCE5555),
-            ),
-          ),
-        ],
       ),
     );
   }
