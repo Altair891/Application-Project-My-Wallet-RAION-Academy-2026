@@ -42,4 +42,13 @@ class ExpenseProvider extends ChangeNotifier {
     _balance -= newExpense.amount;
     notifyListeners();
   }
+
+  void deleteExpense(int index) {
+    if (index >= 0 && index < _expenses.length) {
+      final removedAmount = _expenses[index].amount;
+      _balance += removedAmount;
+      _expenses.removeAt(index);
+      notifyListeners();
+    }
+  }
 }

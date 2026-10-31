@@ -163,9 +163,9 @@ class HomePage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 14),
+
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -176,17 +176,84 @@ class HomePage extends StatelessWidget {
                         padding: EdgeInsets.all(24),
                         child: Center(child: Text('Belum ada pengeluaran.')),
                       )
-                    : Column(
-                        children: [
-                          for (int i = 0; i < expenses.length; i++) ...[
-                            ExpenseTile(expense: expenses[i]),
-                            if (i != expenses.length - 1)
-                              const Divider(
-                                height: 1,
-                                color: Color(0xFFEDF0ED),
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Column(
+                          children: [
+                            for (int i = 0; i < expenses.length; i++) ...[
+                              Dismissible(
+                                key: ValueKey(
+                                  '${expenses[i].date.toIso8601String()}_$i',
+                                ),
+                                direction: DismissDirection.endToStart,
+                                confirmDismiss: (direction) async {
+                                  return await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Hapus Pengeluaran?'),
+                                      content: Text(
+                                        'Pengeluaran "${expenses[i].title}" akan dihapus dan saldo akan dikembalikan sebesar ${formatRupiah(expenses[i].amount)}.',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                          child: const Text('Batal'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, true),
+                                          child: const Text(
+                                            'Hapus',
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                onDismissed: (direction) {
+                                  context.read<ExpenseProvider>().deleteExpense(
+                                    i,
+                                  );
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Pengeluaran dihapus & saldo dikembalikan.',
+                                      ),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                                },
+                                background: Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.only(right: 20),
+                                  color: Colors.red.shade400,
+                                  child: const Icon(
+                                    Icons.delete_outline_rounded,
+                                    color: Colors.white,
+                                    size: 26,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                  ),
+                                  child: ExpenseTile(expense: expenses[i]),
+                                ),
                               ),
+                              if (i != expenses.length - 1)
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 14),
+                                  child: Divider(
+                                    height: 1,
+                                    color: Color(0xFFEDF0ED),
+                                  ),
+                                ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
               ),
             ],
